@@ -62,6 +62,8 @@
                     if(data[i][0] == "特殊能力詳細") continue;
                     if(data[i][0] == "移動速度-地" && data[i][1] == "") { params += `{"label": "${data[i][0]}","value": "ー"},\n`; continue; }
                     if(data[i][0] == "移動速度-空" && data[i][1] == "") { params += `{"label": "${data[i][0]}","value": "ー"},\n`; continue; }
+                    if(data[i][0] == "命中力" && data[i][1] == "") { params += `{"label": "${data[i][0]}","value": "ー"},\n`; continue; }
+                    if(data[i][0] == "打撃点" && data[i][1] == "") { params += `{"label": "${data[i][0]}","value": "ー"},\n`; continue; }
                     params += `{"label": "${data[i][0]}","value": "${toHalfnums(data[i][1])}"},\n`;
                     if(data[i][0] == "生命抵抗力") params += `{"label": "${data[i][0]}-固定","value": "${Number(toHalfnums(data[i][1]))+7}"},\n`;
                     if(data[i][0] == "精神抵抗力") params += `{"label": "${data[i][0]}-固定","value": "${Number(toHalfnums(data[i][1]))+7}"},\n`;
