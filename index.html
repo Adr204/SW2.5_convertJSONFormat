@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text2JSON</title>
+</head>
+<body>
+    <div>
+        <input type="text" placeholder="名称">
+        <input type="text" placeholder="種族">
+        <input type="text" placeholder="レベル">
+        <input type="text" placeholder="知能">
+        <input type="text" placeholder="知覚">
+        <input type="text" placeholder="反応">
+        <input type="text" placeholder="言語">
+        <input type="text" placeholder="生息地">
+    </div>
+    <div>
+        <input type="text" placeholder="知名度">
+        <input type="text" placeholder="弱点値">
+        <input type="text" placeholder="弱点">
+        <input type="text" placeholder="先制値">
+        <input type="text" placeholder="移動速度-地">
+        <input type="text" placeholder="移動速度-空">
+        <input type="text" placeholder="生命抵抗力">
+        <input type="text" placeholder="精神抵抗力">
+    </div>
+    <div>
+        <input type="text" placeholder="攻撃方法">
+        <input type="text" placeholder="命中力">
+        <input type="text" placeholder="打撃点">
+        <input type="text" placeholder="回避力">
+        <input type="text" placeholder="防護点">
+        <input type="text" placeholder="HP">
+        <input type="text" placeholder="MP">
+    </div>
+    <div>
+        <textarea type="text" placeholder="特殊能力詳細" style="height: 80px; width: 200px;"></textarea>
+    </div>
+    <div>
+        <textarea type="text" placeholder="解説" style="height: 80px; width: 200px;"></textarea>
+    </div>
+    <div>
+        <textarea type="text" placeholder="戦利品" style="height: 80px; width: 200px;"></textarea>
+
+    </div>
+    <div id="output">
+        <span></span>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const input = [...document.querySelectorAll("input")];
+            const textarea = [...document.querySelectorAll("textarea")];
+            const output = document.getElementById("output");
+            const span = document.querySelector("span");
+            const makeCharactor = () => {
+                const data = input.concat(textarea).map(e => [e.placeholder, e.value]);
+                const toHalfnums = text => text.replace(/[０-９]/g, m=>'０１２３４５６７８９'.indexOf(m));
+                let params = "";
+                for(let i = 0; i < data.length; i++) {
+                    if(data[i][0] == "特殊能力詳細") continue;
+                    params += `{"label": "${data[i][0]}","value": "${toHalfnums(data[i][1])}"},\n`;
+                    if(data[i][0] == "生命抵抗力") params += `{"label": "${data[i][0]}-固定","value": "${Number(toHalfnums(data[i][1]))+7}"},\n`;
+                    if(data[i][0] == "精神抵抗力") params += `{"label": "${data[i][0]}-固定","value": "${Number(toHalfnums(data[i][1]))+7}"},\n`;
+                    if(data[i][0] == "命中力") params += `{"label": "${data[i][0]}-固定","value": "${Number(toHalfnums(data[i][1]))+7}"},\n`;
+                    if(data[i][0] == "回避力") params += `{"label": "${data[i][0]}-固定","value": "${Number(toHalfnums(data[i][1]))+7}"},\n`;
+                }
+                params = params.slice(0, -2);
+                return `{
+                            "kind": "character",
+                            "data": {
+                                "name": "${data[0][1]}",
+                                "initiative": 0,
+                                "externalUrl": "",
+                                "iconUrl": "",
+                                "memo": "${data.at(-3)[1].replaceAll("\n", "\\n")}",
+                                "commands": "",
+                                "status": [
+                                    {"label": "HP","value": "${toHalfnums(data[21][1])}","max": "${toHalfnums(data[21][1])}"},
+                                    {"label": "MP","value": "${toHalfnums(data[22][1])}","max": "${toHalfnums(data[22][1])}"},
+                                    {"label": "防護点","value": "${toHalfnums(data[20][1])}"},
+                                ],
+                                "params": [
+                                    ${params}
+                                ]
+                            }
+                        }`
+            }
+            let toggle = true;
+            output.addEventListener("mouseenter", () => {
+                toggle = false;
+                }, true,);
+            output.addEventListener("mouseleave", () => {
+                toggle = true;
+                reflectJSON();
+            }, true,);
+            
+            const reflectJSON = () => {
+                span.innerHTML = makeCharactor();
+
+                if(toggle) window.requestAnimationFrame(reflectJSON);
+            }
+            reflectJSON();
+        })
+    </script>
+</body>
+</html>
