@@ -79,7 +79,7 @@
 
                 let commands = "";
                 commands += `2d6${data[17][1] == 0 ? "" : (data[17][1] > 0 ? "+" : "") + data[17][1]} 【命中力判定】\\n`;
-                commands += `2d6${data[18][1] == 0 ? "" : (data[18][1] > 0 ? "+" : "") + data[18][1]} 【ダメージ】\\n`;
+                commands += `${data[18][1]} 【ダメージ】\\n`;
                 commands += `2d6${data[19][1] == 0 ? "" : (data[19][1] > 0 ? "+" : "") + data[19][1]} 【回避力判定】`;
                 
                 return `{
@@ -142,6 +142,7 @@
                 toData(paste);
             })
         })
+        // いずれは宣言特技とかの抽出もしたい
     </script>
 </body>
 </html>
