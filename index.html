@@ -50,6 +50,13 @@
     </div>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
+            /**
+             * @TODO
+             * いずれは宣言特技とかの抽出もしたい
+             * チャット欄へのテンプレート挿入をexecCommandで実装
+             * シノビガミやら他システム用の拡張機能とまとめて出せたらいいなって感じ
+            */
+            
             const getField = () => {
                 const input = [...document.querySelectorAll("input")];
                 const textarea = [...document.querySelectorAll("textarea")];
@@ -67,8 +74,9 @@
                     if(data[i][0] == "特殊能力詳細") continue;
                     if(data[i][0] == "移動速度-地" && data[i][1] == "") { params += `{"label": "${data[i][0]}","value": "ー"},\n`; continue; }
                     if(data[i][0] == "移動速度-空" && data[i][1] == "") { params += `{"label": "${data[i][0]}","value": "ー"},\n`; continue; }
-                    if(data[i][0] == "命中力" && data[i][1] == "") { params += `{"label": "${data[i][0]}","value": "ー"},\n`; continue; }
-                    if(data[i][0] == "打撃点" && data[i][1] == "") { params += `{"label": "${data[i][0]}","value": "ー"},\n`; continue; }
+                    if(data[i][0] == "攻撃方法" && data[i][1] == "") data[i][1] = "なし";
+                    if(data[i][0] == "命中力" && data[i][1] == "") data[i][1] = "ー";
+                    if(data[i][0] == "打撃点" && data[i][1] == "") data[i][1] = "ー";
                     params += `{"label": "${data[i][0]}","value": "${data[i][1]}"},\n`;
                     if(data[i][0] == "生命抵抗力") params += `{"label": "${data[i][0]}-固定","value": "${Number(data[i][1])+7}"},\n`;
                     if(data[i][0] == "精神抵抗力") params += `{"label": "${data[i][0]}-固定","value": "${Number(data[i][1])+7}"},\n`;
@@ -77,19 +85,28 @@
                 }
                 params = params.slice(0, -2);
 
+                let memo = "";
+                console.log(data[16][1]);
+                memo += `攻撃方法:${data[16][1]}`
+                memo += data[16][1] == "なし" ? "" : `　命中力:${data[17][1]}(${Number(data[17][1])+7})　打撃点:${data[18][1]}\\n`;
                 let commands = "";
-                commands += `2d6${data[17][1] == 0 ? "" : (data[17][1] > 0 ? "+" : "") + data[17][1]} 【命中力判定】\\n`;
+                commands += `2d${data[17][1] == 0 ? "" : (data[17][1] > 0 ? "+" : "") + data[17][1]} 【命中力判定】\\n`;
                 commands += `${data[18][1]} 【ダメージ】\\n`;
-                commands += `2d6${data[19][1] == 0 ? "" : (data[19][1] > 0 ? "+" : "") + data[19][1]} 【回避力判定】`;
-                
+                commands += `2d${data[19][1] == 0 ? "" : (data[19][1] > 0 ? "+" : "") + data[19][1]} 【回避力判定】`;
+                /**
+                 * @add キャラクター編集欄の下部オプション(いらないかも)
+                 *  "secret": false,
+                 *  "invisible": false,
+                 *  "hideStatus": false
+                 *  */
                 return `{
                             "kind": "character",
                             "data": {
                                 "name": "${data[0][1]}",
-                                "initiative": 0,
+                                "initiative": ${Number(data[19][1])},
                                 "externalUrl": "",
                                 "iconUrl": "",
-                                "memo": "${data.at(-3)[1].replaceAll("\n", "\\n")}",
+                                "memo": "${data.at(-3)[1].replaceAll("\n", "\\n")}\\nーーーーーーーーーーーーーーーーーー\\n${memo}",
                                 "commands": "${commands}",
                                 "status": [
                                     {"label": "HP","value": "${data[21][1]}","max": "${data[21][1]}"},
@@ -142,7 +159,6 @@
                 toData(paste);
             })
         })
-        // いずれは宣言特技とかの抽出もしたい
     </script>
 </body>
 </html>
