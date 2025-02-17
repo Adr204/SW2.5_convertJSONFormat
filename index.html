@@ -71,12 +71,13 @@
                 const data = field.map(e => [e.placeholder, toHalfnums(e.value)]);
                 let params = "";
                 for(let i = 0; i < data.length; i++) {
-                    if(data[i][0] == "特殊能力詳細") continue;
                     if(data[i][0] == "移動速度-地" && data[i][1] == "") { params += `{"label": "${data[i][0]}","value": "ー"},\n`; continue; }
                     if(data[i][0] == "移動速度-空" && data[i][1] == "") { params += `{"label": "${data[i][0]}","value": "ー"},\n`; continue; }
                     if(data[i][0] == "攻撃方法" && data[i][1] == "") data[i][1] = "なし";
                     if(data[i][0] == "命中力" && data[i][1] == "") data[i][1] = "ー";
                     if(data[i][0] == "打撃点" && data[i][1] == "") data[i][1] = "ー";
+                    if(data[i][0] == "特殊能力詳細" && data[i][1] == "") data[i][1] = "なし";
+                    if(data[i][0] == "特殊能力詳細") data[i][1] = data[i][1].replaceAll("\n", "\\n");
                     params += `{"label": "${data[i][0]}","value": "${data[i][1]}"},\n`;
                     if(data[i][0] == "生命抵抗力") params += `{"label": "${data[i][0]}-固定","value": "${Number(data[i][1])+7}"},\n`;
                     if(data[i][0] == "精神抵抗力") params += `{"label": "${data[i][0]}-固定","value": "${Number(data[i][1])+7}"},\n`;
@@ -86,13 +87,17 @@
                 params = params.slice(0, -2);
 
                 let memo = "";
-                console.log(data[16][1]);
-                memo += `攻撃方法:${data[16][1]}`
-                memo += data[16][1] == "なし" ? "" : `　命中力:${data[17][1]}(${Number(data[17][1])+7})　打撃点:${data[18][1]}\\n`;
                 let commands = "";
-                commands += `2d${data[17][1] == 0 ? "" : (data[17][1] > 0 ? "+" : "") + data[17][1]} 【命中力判定】\\n`;
-                commands += `${data[18][1]} 【ダメージ】\\n`;
-                commands += `2d${data[19][1] == 0 ? "" : (data[19][1] > 0 ? "+" : "") + data[19][1]} 【回避力判定】`;
+                // console.log(data[16][1]);
+                memo += `攻撃方法:${data[16][1]}`
+                if(data[16][1] != "なし") {
+                    memo += `　命中力:${data[17][1]}(${Number(data[17][1])+7})　打撃点:${data[18][1]}\\n`;;
+                    commands += `2d${data[17][1] == 0 ? "" : (data[17][1] > 0 ? "+" : "") + data[17][1]} 【命中力判定】\\n`;
+                    commands += `${data[18][1]} 【ダメージ】\\n`;
+                }
+                commands += `2d${data[19][1] == 0 ? "" : (data[19][1] > 0 ? "+" : "") + data[19][1]} 【回避力判定】\\n`;
+                commands += `2d${data[14][1] == 0 ? "" : (data[19][1] > 0 ? "+" : "") + data[14][1]} 【生命抵抗力判定】\\n`;
+                commands += `2d${data[15][1] == 0 ? "" : (data[19][1] > 0 ? "+" : "") + data[15][1]} 【精神抵抗力判定】`;                
                 /**
                  * @add キャラクター編集欄の下部オプション(いらないかも)
                  *  "secret": false,
@@ -138,7 +143,6 @@
             const toData = (enemy) => {
                 const parse_data = JSON.parse(enemy);
                 const params = parse_data.data.params;
-                const ability = parse_data.data.memo;
                 const data_field = getField().slice(0,-3);
                 const text_field = getField().slice(-3);
                 let pad = 0;
@@ -147,12 +151,12 @@
                     data_field[i].value = params[i+pad].value;
                     // console.log(data_field[i].placeholder, params[i+pad].label);
                 }
-                text_field[0].value = ability;
+                text_field[0].value = params.at(-3).value;
                 text_field[1].value = params.at(-2).value;
                 text_field[2].value = params.at(-1).value;
             }
             document.addEventListener("paste", e => {
-                event.preventDefault();
+                // event.preventDefault();
 
                 const paste = (event.clipboardData || window.clipboardData).getData("text");
                 console.log(paste);
