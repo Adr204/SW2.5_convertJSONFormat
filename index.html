@@ -50,13 +50,18 @@
     </div>
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            const input = [...document.querySelectorAll("input")];
-            const textarea = [...document.querySelectorAll("textarea")];
+            const getField = () => {
+                const input = [...document.querySelectorAll("input")];
+                const textarea = [...document.querySelectorAll("textarea")];
+                return input.concat(textarea);
+            }
+
             const output = document.getElementById("output");
             const span = document.querySelector("span");
             const makeCharactor = () => {
-                const data = input.concat(textarea).map(e => [e.placeholder, e.value]);
                 const toHalfnums = text => text.replace(/[０-９]/g, m=>'０１２３４５６７８９'.indexOf(m));
+                const field = getField();
+                const data = field.map(e => [e.placeholder, toHalfnums(e.value)]);
                 let params = "";
                 for(let i = 0; i < data.length; i++) {
                     if(data[i][0] == "特殊能力詳細") continue;
@@ -64,13 +69,19 @@
                     if(data[i][0] == "移動速度-空" && data[i][1] == "") { params += `{"label": "${data[i][0]}","value": "ー"},\n`; continue; }
                     if(data[i][0] == "命中力" && data[i][1] == "") { params += `{"label": "${data[i][0]}","value": "ー"},\n`; continue; }
                     if(data[i][0] == "打撃点" && data[i][1] == "") { params += `{"label": "${data[i][0]}","value": "ー"},\n`; continue; }
-                    params += `{"label": "${data[i][0]}","value": "${toHalfnums(data[i][1])}"},\n`;
-                    if(data[i][0] == "生命抵抗力") params += `{"label": "${data[i][0]}-固定","value": "${Number(toHalfnums(data[i][1]))+7}"},\n`;
-                    if(data[i][0] == "精神抵抗力") params += `{"label": "${data[i][0]}-固定","value": "${Number(toHalfnums(data[i][1]))+7}"},\n`;
-                    if(data[i][0] == "命中力") params += `{"label": "${data[i][0]}-固定","value": "${Number(toHalfnums(data[i][1]))+7}"},\n`;
-                    if(data[i][0] == "回避力") params += `{"label": "${data[i][0]}-固定","value": "${Number(toHalfnums(data[i][1]))+7}"},\n`;
+                    params += `{"label": "${data[i][0]}","value": "${data[i][1]}"},\n`;
+                    if(data[i][0] == "生命抵抗力") params += `{"label": "${data[i][0]}-固定","value": "${Number(data[i][1])+7}"},\n`;
+                    if(data[i][0] == "精神抵抗力") params += `{"label": "${data[i][0]}-固定","value": "${Number(data[i][1])+7}"},\n`;
+                    if(data[i][0] == "命中力") params += `{"label": "${data[i][0]}-固定","value": "${Number(data[i][1])+7}"},\n`;
+                    if(data[i][0] == "回避力") params += `{"label": "${data[i][0]}-固定","value": "${Number(data[i][1])+7}"},\n`;
                 }
                 params = params.slice(0, -2);
+
+                let commands = "";
+                commands += `2d6${data[17][1] == 0 ? "" : (data[17][1] > 0 ? "+" : "") + data[17][1]} 【命中力判定】\\n`;
+                commands += `2d6${data[18][1] == 0 ? "" : (data[18][1] > 0 ? "+" : "") + data[18][1]} 【ダメージ】\\n`;
+                commands += `2d6${data[19][1] == 0 ? "" : (data[19][1] > 0 ? "+" : "") + data[19][1]} 【回避力判定】`;
+                
                 return `{
                             "kind": "character",
                             "data": {
@@ -79,11 +90,11 @@
                                 "externalUrl": "",
                                 "iconUrl": "",
                                 "memo": "${data.at(-3)[1].replaceAll("\n", "\\n")}",
-                                "commands": "",
+                                "commands": "${commands}",
                                 "status": [
-                                    {"label": "HP","value": "${toHalfnums(data[21][1])}","max": "${toHalfnums(data[21][1])}"},
-                                    {"label": "MP","value": "${toHalfnums(data[22][1])}","max": "${toHalfnums(data[22][1])}"},
-                                    {"label": "防護点","value": "${toHalfnums(data[20][1])}"}
+                                    {"label": "HP","value": "${data[21][1]}","max": "${data[21][1]}"},
+                                    {"label": "MP","value": "${data[22][1]}","max": "${data[22][1]}"},
+                                    {"label": "防護点","value": "${data[20][1]}"}
                                 ],
                                 "params": [
                                     ${params}
@@ -97,15 +108,39 @@
                 }, true,);
             output.addEventListener("mouseleave", () => {
                 toggle = true;
-                reflectJSON();
+                toJSON();
             }, true,);
             
-            const reflectJSON = () => {
+            const toJSON = () => {
                 span.innerHTML = makeCharactor();
 
-                if(toggle) window.requestAnimationFrame(reflectJSON);
+                if(toggle) window.requestAnimationFrame(toJSON);
             }
-            reflectJSON();
+            toJSON();
+
+            const toData = (enemy) => {
+                const parse_data = JSON.parse(enemy);
+                const params = parse_data.data.params;
+                const ability = parse_data.data.memo;
+                const data_field = getField().slice(0,-3);
+                const text_field = getField().slice(-3);
+                let pad = 0;
+                for(let i = 0; i < data_field.length; i++) {
+                    if(data_field[i].placeholder != params[i+pad].label) pad++;
+                    data_field[i].value = params[i+pad].value;
+                    // console.log(data_field[i].placeholder, params[i+pad].label);
+                }
+                text_field[0].value = ability;
+                text_field[1].value = params.at(-2).value;
+                text_field[2].value = params.at(-1).value;
+            }
+            document.addEventListener("paste", e => {
+                event.preventDefault();
+
+                const paste = (event.clipboardData || window.clipboardData).getData("text");
+                console.log(paste);
+                toData(paste);
+            })
         })
     </script>
 </body>
