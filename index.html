@@ -66,9 +66,12 @@
             const output = document.getElementById("output");
             const span = document.querySelector("span");
             const makeCharactor = () => {
-                const toHalfnums = text => text.replace(/[０-９]/g, m=>'０１２３４５６７８９'.indexOf(m));
+                const toHalfnums = text => text.replaceAll(/[０-９]/g, m=>'０１２３４５６７８９'.indexOf(m));
+                const toHalfPlusMinus = text => text.replaceAll(/[＋ー][0-9]+/g, m=>(m[0] == "＋" ? "+" : "-") + m.slice(1));
+                const asteriskToMultiply = text => text.replaceAll("*", "×")
+                const formatting = v => asteriskToMultiply(toHalfPlusMinus(toHalfnums(v)));
                 const field = getField();
-                const data = field.map(e => [e.placeholder, toHalfnums(e.value)]);
+                const data = field.map(e => [e.placeholder, formatting(e.value)]);
                 let params = "";
                 for(let i = 0; i < data.length; i++) {
                     if(data[i][0] == "移動速度-地" && data[i][1] == "") { params += `{"label": "${data[i][0]}","value": "ー"},\n`; continue; }
