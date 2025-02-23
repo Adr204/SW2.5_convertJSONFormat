@@ -52,6 +52,7 @@
         <textarea type="text" placeholder="戦利品" style="height: 120px; width: 500px;"></textarea>
 
     </div>
+    <a id="dl" download="ememy.json" href="data:,hello">Download jsonFile</a>
     <div id="output">
         <span></span>
     </div>
@@ -158,16 +159,22 @@
                 if(toggle) window.requestAnimationFrame(toJSON);
             }
             toJSON();
-
-            const toData = (enemy) => {
-
-                const parse_data = JSON.parse(enemy);
-                const params = parse_data.data.params;
+            const getParams = (json) => {
+                const parse_data = JSON.parse(json);
+                return parse_data.data.params;
+            }
+            const toData = (json) => {
+                const params = getParams(json);
                 const data_field = getField().slice(0,-3);
                 const text_field = getField().slice(-3);
+                /**
+                 * @TODO この辺りもいずれリファクタリングしたい
+                 */
+                let pad = 0;
                 for(let i = 0; i < data_field.length; i++) {
-                    data_field[i].value = params[i].value;
-                    // console.log(data_field[i].placeholder, params[i+pad].label);
+                    if(data_field[i].placeholder != params[i+pad].label) pad++;
+                    data_field[i].value = params[i+pad].value;
+                    console.log(data_field[i].placeholder, params[i+pad].label);
                 }
                 text_field[0].value = params.at(-3).value;
                 text_field[1].value = params.at(-2).value;
@@ -179,6 +186,18 @@
                 const paste = (event.clipboardData || window.clipboardData).getData("text");
                 console.log(paste);
                 toData(paste);
+            });
+            /**
+             *  @TODO こいつどうにかしたい
+             */
+            const formatting = (text) => {
+                return JSON.stringify(JSON.parse(text), null, "\t");
+            }
+            document.getElementById("dl").addEventListener("click", e => {
+                const params = getParams(makeCharactor());
+                console.log(params);
+                e.target.download = `${params[2].value}-${params[0].value}${params[21].value == "ー" ? "" : `-${params[21].value}`}.json`;
+                e.target.href = URL.createObjectURL(new Blob([formatting(makeCharactor())], {type: "text/plain"}))
             })
         })
     </script>
