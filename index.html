@@ -93,7 +93,10 @@
                 fillNullProp("部位名");
                 fillNullProp("コア部位");
                 fillNullProp("特殊能力詳細", "なし");
-                data.set("特殊能力詳細", data.get("特殊能力詳細").replaceAll("\n", "\\n"));
+                const replaceN = (key) => {data.set(key, data.get(key).replaceAll("\n", "\\n"))};
+                replaceN("特殊能力詳細");
+                replaceN("解説");
+                replaceN("戦利品");
                 data.set("戦利品", data.get("戦利品").replace(/[0-9]{4}G/g, m=>{return `${m[0]},${m.slice(1)}`}));
                 
                 let params = "";
