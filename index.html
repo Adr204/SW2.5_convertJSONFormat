@@ -139,7 +139,7 @@
                             "kind": "character",
                             "data": {
                                 "name": "${data.get("名称")}${data.get("部位数") == "ー" ? "" : `[${data.get("部位名")}${data.get("部位名") == data.get("コア部位") ? "*" : ""}]`}",
-                                "initiative": "${data.get("回避力")}",
+                                "initiative": ${Number(data.get("回避力"))+7},
                                 "externalUrl": "",
                                 "iconUrl": "",
                                 "memo": "${data.get("特殊能力詳細")}\\nーーーーーーーーーーーーーーーーーー\\n${memo}",
