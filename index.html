@@ -85,7 +85,7 @@
                                            .replaceAll("\n", "\\n")    
                                            .replaceAll("*", "×")
                                            .replaceAll(/[０-９]/g, m=>'０１２３４５６７８９'.indexOf(m))
-                                           .replaceAll(/[＋ー][0-9]+/g, m=>(m[0] == "＋" ? "+" : "-") + m.slice(1));
+                                           .replaceAll(/d[＋ー][0-9]+/g, m=>"d" + (m[1] == "＋" ? "+" : "-") + m.slice(2));
                 
                 field.map(v => data.set(v.placeholder, format(v.value)));
 
