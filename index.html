@@ -7,6 +7,12 @@
 </head>
 <body>
     <div>
+        <button type="button">レブナント化</button>
+        <button type="button">ハイレブナント化</button>
+        <button type="button">マギレプリカ化</button>
+        <span>←三つとも開発途中</span>
+    </div>
+    <div>
         <input type="text" placeholder="名称">
         <input type="text" placeholder="種族">
         <input type="text" placeholder="レベル">
@@ -61,6 +67,7 @@
             /**
              * @TODO
              * いずれは宣言特技とかの抽出もしたい
+             * getFieldをclassタグつけて管理する方向へ
              * チャット欄へのテンプレート挿入をexecCommandで実装
              * シノビガミやら他システム用の拡張機能とまとめて出せたらいいなって感じ
             */
@@ -130,7 +137,8 @@
                 commands += `${toDiceFormat("生命抵抗力")} 【生命抵抗力判定】\\n`;
                 commands += `${toDiceFormat("精神抵抗力")} 【精神抵抗力判定】`;                
                 /**
-                 * @add キャラクター編集欄の下部オプション(いらないかも)
+                 * 覚書
+                 * cocoforiaのキャラクター編集欄下部オプション
                  *  "secret": false,
                  *  "invisible": false,
                  *  "hideStatus": false
@@ -155,6 +163,32 @@
                             }
                         }`;
             }
+            const modifyInputArea = (map, key, f) => {
+                map.get(key).value = f(map.get(key).value);
+            }
+            const toRevenant = () => {
+                const field = getField();
+                const fieldMap = new Map();
+                // [key, function] の形にして外部データとかで管理したい
+                // 特殊能力やら攻撃方法がない奴らにも対応しなきゃいけない
+                field.map(v => fieldMap.set(v.placeholder, v));
+                modifyInputArea(fieldMap, "名称", v => `レヴナント(${v})`);
+                modifyInputArea(fieldMap, "レベル", v => `${Number(v)+1}`);
+                modifyInputArea(fieldMap, "先制値", v => `${Number(v)-2}`);
+                modifyInputArea(fieldMap, "命中力", v => `${Number(v)+2}`);
+                modifyInputArea(fieldMap, "打撃点", v => `2d+${Number(v.slice(2)+2)}`);
+                modifyInputArea(fieldMap, "回避力", v => `${Number(v)-2}`);
+                modifyInputArea(fieldMap, "HP", v => `${Number(v)+10}`);
+                modifyInputArea(fieldMap, "特殊能力詳細", v => `◯精神効果無効\n◯再生=3点\n手番の終了時に、HPが「3」点、回復します。\n HPが0以下になると、この能力は失われます。\n${v}`);
+                console.log("changed!");
+            };
+            const toHighRevenant = () => {};
+            const toMagiReplica = () => {};
+            document.querySelector("button").addEventListener("click", toRevenant);
+
+            // ==================================================
+            // 以下入出力周り
+            // ==================================================
             let toggle = true;
             output.addEventListener("mouseenter", () => {
                 toggle = false;
