@@ -17,7 +17,7 @@ HighRevenant.set("HP", v => `${Number(v)+20}`);
 HighRevenant.set("特殊能力", v => {
     const uniqueSkill = "◯再生=8点\n手番の終了時に、HPが「8」点、回復します。\n HPが0以下になると、この能力は失われます。\n";
     if(v.startsWith("なし")) return uniqueSkill;
-    return v.replaceAll(/◯再生=[0-9]+点[^▶︎▷◯●(]*/g, "")
+    return v.replaceAll(/◯再生=[0-9]+点([^(▶︎▷●◯]|\((?!宣\))|(?<!\n)[(▶︎▷●◯])*/g, "")
             .replace(/●全身\n|/, m=>m+uniqueSkill);
 });
 HighRevenant.set("解説", v => `死者が強力な怨念や執念によって蘇った存在です。\n通常のレブナントと大きく異なるのは、生前の知識や記憶をほぼそのまま留めている点です。`);

@@ -19,7 +19,7 @@ Revenant.set("HP", v => `0`);
 Revenant.set("特殊能力", v => {
     const uniqueSkill = "◯精神効果無効\n◯再生=3点\n手番の終了時に、HPが「3」点、回復します。\n HPが0以下になると、この能力は失われます。\n";
     if(v.startsWith("なし")) return uniqueSkill;
-    return v.replaceAll(/◯再生=[0-9]+点[^▶︎▷◯●(]*/g, "")
+    return v.replaceAll(/◯再生=[0-9]+点([^(▶︎▷●◯]|\((?!宣\))|(?<!\n)[(▶︎▷●◯])*/g, "")
             .replaceAll(/◯精神.+無効\n?/g, "")
             .replaceAll(/.+\/魔力.+\n?/g, "")
             .replace(/●全身\n|/, m=>m+uniqueSkill);

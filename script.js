@@ -175,4 +175,10 @@ document.addEventListener("DOMContentLoaded", () => {
     document.getElementById("toRevenant")    .addEventListener("click", () => convertTo(Revenant));
     document.getElementById("toHighRevenant").addEventListener("click", () => convertTo(HighRevenant));
     document.getElementById("toMagiReplica") .addEventListener("click", () => convertTo(MagiReplica));
+
+    // ========================================
+    // 2. スキル個別抽出関数
+    // コンバート処理の一部分に組み込まれてる
+    // ========================================
+    const pickupSkill = (text) => text.match(/([▶︎▷●◯]|\((?=宣\)))([^(▶︎▷●◯]|\((?!宣\))|(?<!\n)[(▶︎▷●◯])*/g);
 })
