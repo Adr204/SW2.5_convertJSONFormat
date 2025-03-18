@@ -15,7 +15,7 @@ Revenant.set("命中力", v => `${Number(v)+2}`);
 Revenant.set("打撃点", v => `2d+${Number(v.slice(2))+2}`.replace("+-", "-").replace("+0", ""));
 Revenant.set("回避力", v => `${Number(v)-2}`);
 Revenant.set("HP", v => `${Number(v)+10}`);
-Revenant.set("HP", v => `0`);
+Revenant.set("MP", v => `0`);
 Revenant.set("特殊能力", v => {
     const uniqueSkill = "◯精神効果無効\n◯再生=3点\n手番の終了時に、HPが「3」点、回復します。\n HPが0以下になると、この能力は失われます。\n";
     if(v.startsWith("なし")) return uniqueSkill;
