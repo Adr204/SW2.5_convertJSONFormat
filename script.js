@@ -5,10 +5,10 @@ import {MagiReplica} from "./toMagiReplica.js";
 document.addEventListener("DOMContentLoaded", () => {
     /**
      * @TODO
-     * いずれは宣言特技とかの抽出もしたい
-     * getFieldをclassタグつけて管理する方向へ
-     * チャット欄へのテンプレート挿入をexecCommandで実装
-     * シノビガミやら他システム用の拡張機能とまとめて出せたらいいなって感じ
+     * [x] いずれは宣言特技とかの抽出もしたい
+     * [x] getFieldをclassタグつけて管理する方向へ
+     * [ ] チャット欄へのテンプレート挿入をexecCommandで実装
+     * [ ] シノビガミやら他システム用の拡張機能とまとめて出せたらいいなって感じ
     */
     
     const getField = () => {
@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
     const makeCharactor = () => {
         const field = getField();
         const data = new Map();
-        const format = text => text.replaceAll("\"", "\\\"")
+        const format = text => text.replaceAll(`"`, `\"`)
                                    .replaceAll("\n", "\\n")    
                                    .replaceAll("*", "×")
                                    .replaceAll(/[０-９]/g, m=>'０１２３４５６７８９'.indexOf(m))
@@ -35,7 +35,14 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         });
 
-        const fillNullProp = (key, value = "ー") => { if(data.get(key) == "") data.set(key, value);};
+        // 画面下部に表示する都合上バックスラッシュが2個になってややこしいので調整したいところ
+        // データ側で管理したものを調整して画面上に表示する手法に変更した方がいいかも
+        const fillNullProp = (key, fillValue = "ー") => {
+            const value = data.get(key);
+            const nCount = (value.match(/\\n/g) || []).length; // 改行のみも空白として扱う
+            if(value == "" || 2*nCount == value.length) 
+                data.set(key, fillValue);
+            };
         fillNullProp("移動速度-地");
         fillNullProp("移動速度-他");
         fillNullProp("攻撃方法", "なし");
@@ -45,9 +52,16 @@ document.addEventListener("DOMContentLoaded", () => {
         fillNullProp("部位詳細");
         fillNullProp("部位名");
         fillNullProp("コア部位");
-        fillNullProp("特殊能力", "なし\\n");
+        fillNullProp("特殊能力", "なし");
+        fillNullProp("解説", "なし");
+        fillNullProp("戦利品", "なし");
         data.set("戦利品", data.get("戦利品").replace(/[0-9]{4}G/g, m=>{return `${m[0]},${m.slice(1)}`}));
-        
+        ["特殊能力", "解説", "戦利品"].forEach(key => {
+            const value = data.get(key);
+            if(value.slice(-2) != "\\n") data.set(key, value + "\\n"); 
+        })
+
+
         let name = data.get("名称");
         if(data.get("部位数") != "ー") {
             const core = data.get("コア部位").replaceAll(" ", "").split(",");
