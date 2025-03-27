@@ -48,15 +48,20 @@
         <input class="field" type="text" placeholder="HP">
         <input class="field" type="text" placeholder="MP">
     </div>
-    <div>
-        <textarea class="field" type="text" placeholder="特殊能力" style="height: 120px; width: 500px;"></textarea>
-    </div>
-    <div>
-        <textarea class="field" type="text" placeholder="解説" style="height: 120px; width: 500px;"></textarea>
-    </div>
-    <div>
-        <textarea class="field" type="text" placeholder="戦利品" style="height: 120px; width: 500px;"></textarea>
-
+    <div style="display: flex;">
+        <span>
+            <div>
+                <textarea class="field" type="text" placeholder="特殊能力" style="height: 120px; width: 500px;"></textarea>
+            </div>
+            <div>
+                <textarea class="field" type="text" placeholder="解説" style="height: 120px; width: 500px;"></textarea>
+            </div>
+            <div>
+                <textarea class="field" type="text" placeholder="戦利品" style="height: 120px; width: 500px;"></textarea>
+        
+            </div>
+        </span>
+        <span id="skill_preview"></span>
     </div>
     <a id="dl" download="ememy.json" href="data:,hello">Download jsonFile</a>
     <div id="output">

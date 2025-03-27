@@ -8,7 +8,9 @@ document.addEventListener("DOMContentLoaded", () => {
      * [x] いずれは宣言特技とかの抽出もしたい
      * [x] getFieldをclassタグつけて管理する方向へ
      * [ ] チャット欄へのテンプレート挿入をexecCommandで実装
-     * [ ] シノビガミやら他システム用の拡張機能とまとめて出せたらいいなって感じ
+     * [ ] プレビュー表示したjsonを取り込む形式を止める
+     * [ ] 画面下部のプレビューを変更する 左側にモンスターとそのポップアップ　右側に情報として出てくるアレをそのまま置くイメージ
+     * [ ] 多部位のモンスターをまとめて入力できるように改修する
     */
     
     const getField = () => {
@@ -23,6 +25,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const format = text => text.replaceAll(`"`, `\"`)
                                    .replaceAll("\n", "\\n")    
                                    .replaceAll("*", "×")
+                                   .replaceAll("◯", "○") // ほんとにちょっとだけ違う(置き換え前の方がデカい)
                                    .replaceAll(/[０-９]/g, m=>'０１２３４５６７８９'.indexOf(m))
                                    .replaceAll(/d[＋ー][0-9]+/g, m=>"d" + (m[1] == "＋" ? "+" : "-") + m.slice(2));
         
@@ -194,5 +197,20 @@ document.addEventListener("DOMContentLoaded", () => {
     // 2. スキル個別抽出関数
     // コンバート処理の一部分に組み込まれてる
     // ========================================
-    const pickupSkill = (text) => text.match(/([▶︎▷●◯]|\((?=宣\)))([^(▶︎▷●◯]|\((?!宣\))|(?<!\n)[(▶︎▷●◯])*/g);
+    const preview = document.getElementById("skill_preview");
+    const pickupSkill = (text) => text.match(/([▶︎▷●○]|\((?=宣\)))([^(▶︎▷●○]|\((?!宣\))|(?<!\n)[(▶︎▷●○])*/g);
+    document.addEventListener("keydown", e => {
+        if(e.key == "Escape") {
+            preview.innerHTML = "";
+            const skills = pickupSkill(document.querySelector("textarea").value);
+            skills.forEach(e => {
+                if(e[0] == "●") {
+                    const id = e.match(/(?=●).*/)[0];
+                    const parts = `<div><input id="${id}" type="checkbox"><label for="${id}" style="user-select: none;">${id}</label></div>`
+                    preview.innerHTML += parts;
+                }
+            })
+        }
+    })
+    // const parsingSkill = (arr) => 
 })
